@@ -1,0 +1,6 @@
+[package]
+name = "dummy_project"
+version = "0.1.0"
+authors = ["Oliver Schneider <github35764891676564198441@oli-obk.de>"]
+
+[dependencies]

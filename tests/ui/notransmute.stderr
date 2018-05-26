@@ -1,0 +1,10 @@
+error: no. No. NO. NOOOOOO!!!! Like seriously, doesn't anyone read our coding guidelines?
+ --> $DIR/notransmute.rs:2:9
+  |
+2 |     let footransmutebar = 42; //~ ERROR NOOOOO
+  |         ^^^^^^^^^^^^^^^
+  |
+  = note: #[forbid(transmute)] on by default
+
+error: aborting due to previous error
+

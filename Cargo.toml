@@ -4,4 +4,7 @@ version = "0.1.0"
 authors = ["Oliver Schneider <github35764891676564198441@oli-obk.de>"]
 
 [dependencies]
-clippy_lints = "0.0.204"
+clippy_lints = "0.0.205"
+
+[dev-dependencies]
+compiletest_rs = "0.3.11"

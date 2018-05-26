@@ -139,7 +139,7 @@ pub fn run_lints<F: Fn(&mut LintStore) + Send + Sync + 'static>(f: F) {
     // this check ensures that dependencies are built but not linted and the final
     // crate is
     // linted but not built
-    let clippy_enabled = orig_args.iter().any(|s| s == "--emit=dep-info,metadata");
+    let clippy_enabled = orig_args.iter().any(|s| s == "--emit=dep-info,metadata") || std::env::var("LINTER_TESTMODE").is_ok();
 
     let mut ccc = ClippyCompilerCalls::new(clippy_enabled, f);
     rustc_driver::run(move || rustc_driver::run_compiler(&args, &mut ccc, None, None));

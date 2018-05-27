@@ -1,0 +1,10 @@
+error: This might panic
+ --> $DIR/no_div.rs:3:13
+  |
+3 |     let x = 5 / 10;
+  |             ^^^^^^
+  |
+  = note: #[forbid(no_int_div)] on by default
+
+error: aborting due to previous error
+

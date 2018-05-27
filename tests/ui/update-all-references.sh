@@ -22,7 +22,7 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "usage: $0"
 fi
 
-BUILD_DIR=$PWD/target/debug/test_build_base
+BUILD_DIR=/tmp/
 MY_DIR=$(dirname $0)
 cd $MY_DIR
 find . -name '*.rs' | xargs ./update-references.sh $BUILD_DIR

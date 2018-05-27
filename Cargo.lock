@@ -241,6 +241,7 @@ version = "0.1.0"
 dependencies = [
  "clippy_lints 0.0.205 (registry+https://github.com/rust-lang/crates.io-index)",
  "compiletest_rs 0.3.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "if_chain 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

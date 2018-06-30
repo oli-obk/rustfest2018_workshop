@@ -3,7 +3,7 @@
 ## Prerequisites
 
 ```bash
-rustup override set nightly-2018-05-19
+rustup override set nightly-2018-06-29
 ```
 
 ## Installing the checker

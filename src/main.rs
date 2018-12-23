@@ -1,9 +1,9 @@
 #![feature(box_syntax)]
 #![feature(rustc_private)]
-#![feature(macro_vis_matcher)]
-#![feature(macro_at_most_once_rep)]
 
-extern crate rustfest2018_workshop;
+extern crate rustc_driver;
+
+use rustc_driver::driver;
 
 #[macro_use] extern crate rustc;
 extern crate syntax;
@@ -40,12 +40,12 @@ declare_lint! {
 impl<'a, 'tcx> LateLintPass<'a, 'tcx> for Pass {
     fn check_expr(&mut self, cx: &LateContext<'a, 'tcx>, expr: &'tcx Expr) {
         if_chain! {
-            if let Expr_::ExprBinary(ref op, _, _) = expr.node;
-            if BinOp_::BiDiv == op.node;
+            if let ExprKind::Binary(ref op, _, _) = expr.node;
+            if BinOpKind::Div == op.node;
             then {
                 let ty = cx.tables.expr_ty(expr);
                 match ty.sty {
-                    ty::TyInt(_) | ty::TyUint(_) => {
+                    ty::Int(_) | ty::Uint(_) => {
                         cx.span_lint(
                             NO_INT_DIV,
                             expr.span,
@@ -79,9 +79,16 @@ impl EarlyLintPass for NoTransmute {
     }
 }
 
-fn main() {
-    rustfest2018_workshop::run_lints(|ls| {
-        ls.register_early_pass(None, false, box NoTransmute);
-        ls.register_late_pass(None, false, box Pass);
+
+pub fn main() {
+    let args: Vec<_> = std::env::args().collect();
+    rustc_driver::run(move || {
+        let mut compiler = driver::CompileController::basic();
+        compiler.after_parse.callback = Box::new(move |state| {
+            let mut ls = state.session.lint_store.borrow_mut();
+            ls.register_early_pass(None, false, box NoTransmute);
+            ls.register_late_pass(None, false, box Pass);
+        });
+        rustc_driver::run_compiler(&args, Box::new(compiler), None, None)
     });
 }

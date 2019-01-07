@@ -1,0 +1,10 @@
+error: state transition `end_call` not applicable for states {"Ringing"}
+  --> $DIR/state_machine_fail.rs:29:5
+   |
+29 |     x.end_call(); //~ ERROR not applicable for states {"Ringing"}
+   |     ^^^^^^^^^^^^
+   |
+   = note: #[forbid(state_machine)] on by default
+
+error: aborting due to previous error
+

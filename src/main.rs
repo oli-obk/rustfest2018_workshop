@@ -1,29 +1,25 @@
 #![feature(box_syntax)]
 #![feature(rustc_private)]
 
-extern crate rustc_driver;
-
-use rustc::hir::intravisit::FnKind;
-use syntax::ast::NodeId;
-use syntax::source_map::Span;
-use rustc_driver::driver;
-
-#[macro_use] extern crate rustc;
-extern crate syntax;
+extern crate rustc;
 extern crate rustc_data_structures;
+extern crate rustc_driver;
+extern crate syntax;
 
-#[macro_use]
-extern crate if_chain;
-
-use rustc::lint::*;
-use syntax::ast::Ident;
-
+use rustc::{declare_lint, lint_array};
 use rustc::hir::*;
+use rustc::hir::intravisit::FnKind;
+use rustc::lint::*;
 use rustc::mir;
-use rustc_data_structures::indexed_vec::IndexVec;
 use rustc::ty;
+use rustc_data_structures::indexed_vec::IndexVec;
+use rustc_driver::driver;
+use syntax::ast::{Ident, NodeId};
+use syntax::source_map::Span;
 
 use std::collections::{HashMap, HashSet};
+
+use if_chain::if_chain;
 
 declare_lint! {
     pub NO_INT_DIV,
@@ -116,11 +112,17 @@ impl<'a, 'tcx> LateLintPass<'a, 'tcx> for StateMachine {
     ) {
         let def_id = cx.tcx.hir().body_owner_def_id(body.id());
         let mir = cx.tcx.optimized_mir(def_id);
-        let mut states: IndexVec<mir::BasicBlock, HashSet<&'static str>> = IndexVec::from_elem(HashSet::new(), mir.basic_blocks());
+        let mut states: IndexVec<mir::BasicBlock, HashSet<&'static str>> =
+            IndexVec::from_elem(HashSet::new(), mir.basic_blocks());
         states[mir::START_BLOCK].insert(self.start);
 
         for (bb, bbdata) in mir.basic_blocks().iter_enumerated() {
-            if let mir::TerminatorKind::Call { func, destination: Some((_, succ)), .. } = &bbdata.terminator().kind {
+            if let mir::TerminatorKind::Call {
+                func,
+                destination: Some((_, succ)),
+                ..
+            } = &bbdata.terminator().kind
+            {
                 let transition = self.transitions.iter().find(|(&transition, _)| {
                     match func.ty(&mir.local_decls, cx.tcx).sty {
                         ty::FnDef(did, _) => cx.tcx.item_name(did) == transition,
@@ -134,7 +136,10 @@ impl<'a, 'tcx> LateLintPass<'a, 'tcx> for StateMachine {
                         cx.span_lint(
                             STATE_MACHINE,
                             bbdata.terminator().source_info.span,
-                            &format!("state transition `{}` not applicable for states {:?}", transition, states[bb] ),
+                            &format!(
+                                "state transition `{}` not applicable for states {:?}",
+                                transition, states[bb]
+                            ),
                         );
                     }
                 }
@@ -167,7 +172,14 @@ pub fn main() {
                 ("call_accepted", ("Waiting", "Calling")),
             ];
             let transitions = transitions.into_iter().collect();
-            ls.register_late_pass(None, false, box StateMachine { start: "HangedUp", transitions });
+            ls.register_late_pass(
+                None,
+                false,
+                box StateMachine {
+                    start: "HangedUp",
+                    transitions,
+                },
+            );
         });
         rustc_driver::run_compiler(&args, Box::new(compiler), None, None)
     });

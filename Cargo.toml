@@ -2,6 +2,7 @@
 name = "rustfest2018_workshop"
 version = "0.1.0"
 authors = ["Oliver Schneider <github35764891676564198441@oli-obk.de>"]
+edition = "2018"
 
 [dependencies]
 if_chain = "0.1.2"
